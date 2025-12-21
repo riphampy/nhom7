@@ -4,18 +4,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng Nhập / Đăng Ký - Protech</title>
+    <title>Đăng Nhập / Đăng Ký - VP Computer</title>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/login.css">
-    <!-- Thêm dòng này vào trong thẻ <head> của mỗi file HTML -->
+    <link rel="stylesheet" href="css/toast.css">
 <link rel="icon" type="image/png" href="img/favicon.png">
 </head>
 
 <body>
-    <!-- Thêm một khối bao bọc bên ngoài auth-container -->
+    <div id="toast-container"></div>
     <div class="auth-page-wrapper">
         <div class="auth-container">
             <!-- Phần SLIDER bên trái - Đã cập nhật cấu trúc -->
@@ -37,7 +37,7 @@
             <div class="auth-form-panel">
                 <div class="form-wrapper">
                     <!-- Logo được chuyển vào đây -->
-                    <a href="index.html" class="login-logo"><img src="img/logo.png" alt="Protech Logo"></a>
+                    <a href="index.html" class="login-logo"><img src="img/logo.png" alt="VP Computer Logo"></a>
                     <!-- Form Đăng Nhập -->
                     <div class="form-box login active">
                         <h1>Đăng Nhập</h1>
@@ -54,11 +54,11 @@
                         </form>
                         <div class="separator"><span>Hoặc đăng nhập với</span></div>
                         <div class="social-login">
-                            <a href="https://gmail.com" class="social-btn google"><i class="fab fa-google"></i> Google</a>
-                            <a href="https://facebook.com" class="social-btn facebook"><i class="fab fa-facebook-f"></i> Facebook</a>
+                            <a href="#" class="social-btn google"><i class="fab fa-google"></i> Google</a>
+                            <a href="#" class="social-btn facebook"><i class="fab fa-facebook-f"></i> Facebook</a>
                         </div>
                         <div class="form-footer">
-                            <a href="contact.html" class="forgot-password">Quên mật khẩu?</a>
+                            <a href="#" class="forgot-password" id="forgotpassword">Quên mật khẩu?</a>
                             <p>Chưa có tài khoản? <a href="signup.html" class="toggle-link" data-target="register">Tạo tài
                                     khoản</a>
                             </p>
@@ -71,7 +71,7 @@
         </div>
     </div>
     <!-- Loại bỏ Swiper.js, thay bằng login.js -->
-    <script src="js/login.js"></script>
+    <script type="module" src="js/login.js"></script>
 </body>
 
 </html>
