@@ -106,43 +106,60 @@ if(contactForm) {
     } else {
     }
 });
-if(applyForm) {
+if (applyForm) {
     onAuthStateChanged(auth, async (user) => {
-    if (user) {
-        const applyNameInput = document.getElementById('app-name');
-        const applyEmailInput = document.getElementById('app-email');
-        const applyPhoneInput = document.getElementById('app-phone');
+        if (user) {
+            const contactNameInput = document.getElementById('app-name');
+            const contactEmailInput = document.getElementById('app-email');
+            const contactPhoneInput = document.getElementById('app-phone');
 
-        if (applyEmailInput) {
-                applyEmailInput.value = user.email || "";
+            // Điền Email và Tên từ Auth
+            if (contactEmailInput) contactEmailInput.value = user.email || "";
+            if (contactNameInput) contactNameInput.value = user.displayName || "";
+
+            // Điền SĐT từ Firestore (Vì Auth thường không có SĐT nếu login bằng email)
+            if (contactPhoneInput) {
+                try {
+                    const userRef = doc(db, "users", user.uid);
+                    const userSnap = await getDoc(userRef);
+                    if (userSnap.exists()) {
+                        const data = userSnap.data();
+                        contactPhoneInput.value = data.phoneNumber || "";
+                    }
+                } catch (error) {
+                    console.error("Lỗi lấy SĐT tuyển dụng:", error);
+                }
             }
-        if (applyNameInput) {
-                applyNameInput.value = user.displayName || "";
-            }
-        if (applyPhoneInput){
-            applyPhoneInput.value = user.phoneNumber || "";
         }
-    } else {
-    }
-});
-if(checkoutForm) {
+    });
+}
+
+// 2. Xử lý cho Form Thanh Toán (Checkout Form)
+if (checkoutForm) {
     onAuthStateChanged(auth, async (user) => {
-    if (user) {
-        const checkNameInput = document.getElementById('fullname');
-        const checkEmailInput = document.getElementById('email');
-        const checkPhoneInput = document.getElementById('phone');
+        if (user) {
+            const contactNameInput = document.getElementById('fullname');
+            const contactEmailInput = document.getElementById('email');
+            const contactPhoneInput = document.getElementById('phone');
 
-        if (checkEmailInput) {
-                checkEmailInput.value = user.email || "";
+            if (contactEmailInput) contactEmailInput.value = user.email || "";
+            if (contactNameInput) contactNameInput.value = user.displayName || "";
+
+            // Điền SĐT từ Firestore
+            if (contactPhoneInput) { // Sửa lỗi chính tả ContactPhoneInput -> contactPhoneInput
+                try {
+                    const userRef = doc(db, "users", user.uid);
+                    const userSnap = await getDoc(userRef);
+                    if (userSnap.exists()) {
+                        const data = userSnap.data();
+                        contactPhoneInput.value = data.phoneNumber || "";
+                    }
+                } catch (error) {
+                    console.error("Lỗi lấy SĐT thanh toán:", error);
+                }
             }
-        if (checkNameInput) {
-                checkNameInput.value = user.displayName || "";
-            }
-        if (checkPhoneInput){
-            checkPhoneInput.value = user.phoneNumber || "";
         }
-    } else {
-    }
-});
-};
+    });
+}
+
 
