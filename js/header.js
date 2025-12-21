@@ -8,7 +8,7 @@ class HeaderComponent extends HTMLElement {
     }
 
     connectedCallback() {
-        const brandName = "Protech Computer";
+        const brandName = "VP Computer";
         const headerHTML = `
             <div class="mobile-menu-overlay" id="mobile-menu-overlay"></div>
             <header>
@@ -54,6 +54,8 @@ class HeaderComponent extends HTMLElement {
                         <li><a href="promotion.html"><i class="fas fa-tags"></i> Khuyến Mãi</a></li>
                         <li><a href="contact.html"><i class="fas fa-envelope"></i> Liên Hệ</a></li>
                     </ul>
+                    <div class="mobile-user-auth" style="padding: 20px; border-top: 1px solid var(--border-color);">
+                         </div>
                 </nav>
             </header>
         `;
@@ -61,10 +63,10 @@ class HeaderComponent extends HTMLElement {
         const fragment = document.createRange().createContextualFragment(headerHTML);
         this.append(fragment);
 
-        // --- Logic UI (Menu & Active Link) ---
+        // Logic UI
         this.setupMenuLogic();
         
-        // --- Logic Auth (Quan trọng) ---
+        // Logic Auth 
         this.setupAuthListener();
     }
 
@@ -86,35 +88,54 @@ class HeaderComponent extends HTMLElement {
     }
 
     setupAuthListener() {
-        const userAuthContainer = this.querySelector('.user-auth');
+    const userAuthContainer = this.querySelector('.user-auth');
+    const mobileUserAuth = this.querySelector('.mobile-user-auth');
 
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                const userName = user.displayName || "Người dùng";
-                const userPhoto = user.photoURL || `https://ui-avatars.com/api/?name=${userName}&background=random`;
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            const userName = user.displayName || "Người dùng";
+            const userPhoto = user.photoURL || `https://ui-avatars.com/api/?name=${userName}&background=random`;
 
-                userAuthContainer.innerHTML = `
-                    <div class="user-logged">
-                        <img src="${userPhoto}" alt="Avatar" class="user-avatar">
-                        <span class="user-name">${userName}</span>
-                        <div class="user-dropdown">
-                            <a href="profile.html"><i class="fas fa-user-circle"></i> Hồ sơ cá nhân</a>
-                            <a href="#" id="btn-logout-header"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
-                        </div>
+            const htmlContent = `
+                <div class="user-logged">
+                    <img src="${userPhoto}" alt="Avatar" class="user-avatar" style="width:35px; height:35px; border-radius:50%; object-fit:cover;">
+                    <span class="user-name">${userName}</span>
+                    <div class="user-dropdown">
+                        <a href="profile.html"><i class="fas fa-user-circle"></i> Hồ sơ cá nhân</a>
+                        <a href="#" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
                     </div>
-                `;
+                </div>
+            `;
 
-                this.querySelector('#btn-logout-header').addEventListener('click', (e) => {
+            const mobileHtmlContent = `
+                <div class="mobile-logged-info" style="display:flex; flex-direction:column; gap:10px;">
+                    <a href="profile.html" style="display:flex; align-items:center; gap:10px; color:var(--text-primary);">
+                        <img src="${userPhoto}" style="width:35px; height:35px; border-radius:50%; object-fit:cover;">
+                        <span>${userName}</span>
+                    </a>
+                    <a href="#" class="btn-logout" style="color:var(--accent-color); padding: 5px 0;"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
+                </div>
+            `;
+
+            if (userAuthContainer) userAuthContainer.innerHTML = htmlContent;
+            if (mobileUserAuth) mobileUserAuth.innerHTML = mobileHtmlContent;
+
+            this.querySelectorAll('.btn-logout').forEach(btn => {
+                btn.onclick = (e) => {
                     e.preventDefault();
-                    signOut(auth).then(() => window.location("index.html"));
-                });
-            } else {
-                userAuthContainer.innerHTML = `
-                    <a href="login.html" class="auth-link"><i class="fas fa-user"></i> Đăng nhập / Đăng ký</a>
-                `;
-            }
-        });
-    }
+                    signOut(auth).then(() => {
+                        window.location.href = "index.html";
+                    }).catch(err => console.error("Lỗi đăng xuất:", err));
+                };
+            });
+
+        } else {
+            const loginHTML = `<a href="login.html" class="auth-link"><i class="fas fa-user"></i> Đăng nhập / Đăng ký</a>`;
+            if (userAuthContainer) userAuthContainer.innerHTML = loginHTML;
+            if (mobileUserAuth) mobileUserAuth.innerHTML = loginHTML;
+        }
+    });
+}
 }
 
 customElements.define('header-placeholder', HeaderComponent);
