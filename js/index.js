@@ -142,7 +142,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             productCard.innerHTML = `
-            <<div class="product-image">
+            <div class="product-image">
                 <a href="product-detail.html?id=${product.id}">
                     <img src="${product.image}" alt="${product.name}">
                 </a>
