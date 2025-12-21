@@ -142,14 +142,22 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             productCard.innerHTML = `
-            <div class="product-image"><img src="${product.image}" alt="${product.name}"></div>
+            <<div class="product-image">
+                <a href="product-detail.html?id=${product.id}">
+                    <img src="${product.image}" alt="${product.name}">
+                </a>
+            </div>
             <div class="product-info">
-                <h3 class="product-name">${product.name}</h3>
+                <h3 class="product-name">
+                    <a href="product-detail.html?id=${product.id}" style="text-decoration: none; color: inherit;">
+                        ${product.name}
+                    </a>
+                </h3>
                 ${priceHTML}
                 <div class="product-actions">
-                                    <button class="btn btn-secondary" ${isAvailable ? '' : 'disabled'}>
-                    ${isAvailable ? 'Thêm vào giỏ' : 'Hết hàng'}
-                </button>
+                    <button class="btn btn-secondary" ${isAvailable ? '' : 'disabled'}>
+                        ${isAvailable ? 'Thêm vào giỏ' : 'Hết hàng'}
+                    </button>
                 </div>
             </div>
         `;
