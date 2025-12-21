@@ -7,19 +7,61 @@ body {
 }
 .checkout-container {
     display: flex;
+    flex-direction: row; /* Bắt buộc xếp ngang */
+    align-items: flex-start; /* Căn thẳng hàng trên cùng */
+    justify-content: space-between;
+    gap: 30px; /* Khoảng cách giữa 2 cột */
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
     min-height: 100vh;
 }
 
-/* --- Cột thông tin khách hàng (bên trái) --- */
+/* --- Cột thông tin khách hàng (Bên trái) --- */
 .customer-info {
-    flex-basis: 55%;
-    padding: 40px;
-    display: flex;
-    justify-content: flex-end; /* Đẩy nội dung về bên phải */
+    flex: 1; /* Chiếm phần dư còn lại */
+    /* Hoặc dùng width cụ thể nếu muốn: width: 60%; */
+    padding-right: 20px;
 }
+
 .info-wrapper {
     width: 100%;
-    max-width: 550px;
+    /* Xóa max-width cũ nếu nó làm hẹp giao diện */
+}
+/* --- Cột tóm tắt đơn hàng (Bên phải) --- */
+.order-summary-checkout {
+    flex: 0 0 400px; /* Cố định chiều rộng cột phải là 400px */
+    background-color: #f8f9fa; /* Màu nền xám nhẹ */
+    padding: 30px;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+    
+    /* Làm cho cột này trượt theo khi cuộn trang (Sticky) */
+    position: sticky;
+    top: 20px; 
+}
+
+/* --- RESPONSIVE: Khi màn hình nhỏ (Mobile/Tablet) thì mới xếp dọc --- */
+@media (max-width: 992px) {
+    .checkout-container {
+        flex-direction: column-reverse; /* Đảo ngược: Đơn hàng lên trên, Nhập liệu xuống dưới (hoặc column thường tùy bạn) */
+        gap: 0;
+        padding: 0;
+    }
+
+    .customer-info {
+        width: 100%;
+        padding: 20px;
+    }
+
+    .order-summary-checkout {
+        flex: auto;
+        width: 100%;
+        position: static; /* Tắt sticky trên mobile */
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+    }
 }
 .checkout-logo {
     font-size: 2rem;
@@ -224,7 +266,169 @@ body {
     font-weight: 700;
     cursor: pointer;
 }
+/* css/checkout.css - Thêm vào cuối file */
 
+/* Khung chứa tổng thể */
+.bank-transfer-box {
+    margin-top: 15px;
+    border: 1px solid #4aa3df; /* Viền xanh bao quanh */
+    border-radius: 8px;
+    padding: 20px;
+    background-color: #fff;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.bank-title {
+    color: #4aa3df;
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    font-weight: 700;
+}
+
+/* Card thông tin chi tiết (Nền xám nhạt) */
+.bank-details-card {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.bank-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    font-size: 0.95rem;
+    align-items: center; /* Căn giữa theo chiều dọc */
+}
+
+.bank-row:last-child {
+    margin-bottom: 0;
+}
+
+.bank-row .label {
+    font-weight: 700;
+    color: #333;
+    min-width: 140px; /* Đảm bảo cột nhãn thẳng hàng */
+}
+
+.bank-row .value {
+    text-align: right;
+    color: #555;
+    flex: 1;
+}
+
+.bank-row .value.uppercase {
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.bank-row .value.highlight-blue {
+    color: #4aa3df;
+    font-weight: 700;
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+}
+
+.bank-row .value.highlight-green {
+    color: #28a745;
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+/* Nút Copy */
+.account-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    flex: 1;
+}
+
+.btn-copy {
+    background-color: #5c6bc0; /* Màu tím xanh giống ảnh */
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.btn-copy:hover {
+    background-color: #3f51b5;
+}
+
+/* Hộp nội dung chuyển khoản */
+.content-row {
+    display: block; /* Để nội dung xuống dòng */
+}
+.content-row .label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.transfer-content-box {
+    background-color: #fff;
+    border: 1px dashed #ccc;
+    padding: 10px;
+    text-align: center;
+    font-family: monospace;
+    font-size: 1.1rem;
+    color: #333;
+    border-radius: 4px;
+}
+
+/* Khung hướng dẫn (Nền vàng nhạt) */
+.bank-instructions {
+    background-color: #fff9e6; /* Màu vàng nhạt */
+    border-left: 4px solid #fbc02d; /* Viền vàng đậm bên trái */
+    padding: 15px;
+    border-radius: 4px;
+}
+
+.bank-instructions h4 {
+    margin: 0 0 10px 0;
+    color: #333;
+    font-size: 1rem;
+}
+
+.bank-instructions ul {
+    margin: 0;
+    padding-left: 20px;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.bank-instructions li {
+    margin-bottom: 5px;
+    line-height: 1.5;
+}
+
+/* Responsive cho mobile */
+@media (max-width: 480px) {
+    .bank-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .bank-row .value, .account-wrapper {
+        text-align: left;
+        justify-content: flex-start;
+        width: 100%;
+        margin-top: 5px;
+    }
+    .bank-details-card {
+        padding: 15px;
+    }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 /* --- Responsive --- */
 @media (max-width: 992px) {
     .checkout-container {
