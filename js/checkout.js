@@ -72,13 +72,13 @@ document.addEventListener('DOMContentLoaded', () => {
         yPosition += 20;
         doc.setFontSize(14);
         doc.setFont('helvetica', 'normal');
-        doc.text("VP Computer", pageWidth / 2, yPosition, { align: 'center' });
+        doc.text("Protech Computer", pageWidth / 2, yPosition, { align: 'center' });
         yPosition += 20;
 
         // Mã đơn hàng và Ngày tạo
         // Đoạn code mới đã thêm giờ tạo
         // Mã đơn hàng và Ngày giờ tạo
-        const orderId = `VPC-${Math.floor(Date.now() / 1000)}`;
+        const orderId = `PTC-${Math.floor(Date.now() / 1000)}`;
         const now = new Date(); // Lấy đối tượng Date hiện tại
 
         // --- Định dạng Ngày (DD/MM/YYYY) ---
@@ -170,12 +170,12 @@ document.addEventListener('DOMContentLoaded', () => {
         yPosition += 40; // << THAY ĐỔI DÒNG NÀY: Tạo một khoảng cách 40pt so với dòng Tổng Cộng
         doc.setFontSize(10);
         doc.setFont('helvetica', 'italic');
-        doc.text(removeAccents("Cam on quy khach da mua hang tai VP Computer!"), pageWidth / 2, yPosition, { align: 'center' });
+        doc.text(removeAccents("Cam on quy khach da mua hang tai Protech Computer!"), pageWidth / 2, yPosition, { align: 'center' });
 
         // --- LƯU FILE PDF ---
         const today = new Date();
         const formattedDate = `${day}-${month}-${year}`;
-        const fileName = `HoaDon_VPComputer-${formattedDate}.pdf`;
+        const fileName = `HoaDon_ProtechComputer-${formattedDate}.pdf`;
         doc.save(fileName);
     }
 
