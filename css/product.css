@@ -40,10 +40,6 @@
     border-radius: 8px;
     border: 1px solid var(--border-color);
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-
-    /* --- THÊM 2 DÒNG NÀY ĐỂ TẠO HIỆU ỨNG --- */
-    position: sticky;
-    top: 100px; /* Khoảng cách từ thanh lọc đến đỉnh màn hình khi dính lại */
 }
 
 #filter-sidebar h3 {
