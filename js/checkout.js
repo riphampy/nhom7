@@ -51,7 +51,57 @@ document.addEventListener('DOMContentLoaded', () => {
 
         summaryTotalPriceEl.textContent = `${subtotal.toLocaleString('vi-VN')}₫`;
     }
+// --- KHAI BÁO THÊM CHO BANKING ---
+    const paymentRadios = document.querySelectorAll('input[name="payment"]');
+    const bankInfoBox = document.getElementById('bank-transfer-info');
+    const transferAmountEl = document.getElementById('transfer-amount');
+    const instructionAmountEl = document.getElementById('instruction-amount');
+    const btnCopy = document.getElementById('btn-copy-acc');
+    
+    // ... (Phần load cart và tính subtotal giữ nguyên) ...
 
+    // --- HÀM CẬP NHẬT GIÁ VÀO BANK INFO ---
+    function updateBankTransferAmount(total) {
+        if (transferAmountEl) transferAmountEl.textContent = `${total.toLocaleString('vi-VN')}₫`;
+        if (instructionAmountEl) instructionAmountEl.textContent = `${total.toLocaleString('vi-VN')}₫`;
+    }
+
+    // --- LOGIC HIỆN/ẨN KHUNG BANKING ---
+    function handlePaymentChange() {
+        const selectedPayment = document.querySelector('input[name="payment"]:checked').value;
+        if (selectedPayment === 'bank') {
+            bankInfoBox.style.display = 'block';
+            // Scroll nhẹ xuống để user thấy thông tin
+            bankInfoBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        } else {
+            bankInfoBox.style.display = 'none';
+        }
+    }
+
+    // Gán sự kiện cho các radio button
+    paymentRadios.forEach(radio => {
+        radio.addEventListener('change', handlePaymentChange);
+    });
+
+    // --- LOGIC NÚT COPY ---
+    if (btnCopy) {
+        btnCopy.addEventListener('click', () => {
+            const accNum = document.getElementById('bank-account-number').innerText;
+            navigator.clipboard.writeText(accNum).then(() => {
+                // Hiệu ứng khi copy thành công
+                const originalText = btnCopy.innerHTML;
+                btnCopy.innerHTML = '<i class="fas fa-check"></i> Đã chép';
+                btnCopy.style.backgroundColor = '#28a745';
+                
+                setTimeout(() => {
+                    btnCopy.innerHTML = originalText;
+                    btnCopy.style.backgroundColor = ''; // Trả về màu cũ (CSS handle)
+                }, 2000);
+            }).catch(err => {
+                console.error('Không thể copy text: ', err);
+            });
+        });
+    }
     // --- Hàm tạo và tải hóa đơn PDF (PHIÊN BẢN SỬA LỖI LAYOUT) ---
     function generateInvoice(customerData, cartData, total) {
         const { jsPDF } = window.jspdf;
@@ -214,5 +264,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // --- Khởi tạo trang ---
+    handlePaymentChange();
     renderOrderSummary();
 });
