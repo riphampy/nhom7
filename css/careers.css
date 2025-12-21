@@ -67,7 +67,14 @@
     max-width: 800px;
     margin: 0 auto;
 }
-
+.apply-form select { /* <--- Thêm dòng này */
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background-color: #fff; /* Thêm nền trắng */
+    color: var(--text-secondary);
+}
 .form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
