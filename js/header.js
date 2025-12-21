@@ -8,7 +8,7 @@ class HeaderComponent extends HTMLElement {
     }
 
     connectedCallback() {
-        const brandName = "VP Computer";
+        const brandName = "Protech Computer";
         const headerHTML = `
             <div class="mobile-menu-overlay" id="mobile-menu-overlay"></div>
             <header>
