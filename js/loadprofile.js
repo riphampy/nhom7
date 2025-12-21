@@ -109,18 +109,18 @@ if(contactForm) {
 if(applyForm) {
     onAuthStateChanged(auth, async (user) => {
     if (user) {
-        const contactNameInput = document.getElementById('app-name');
-        const contactEmailInput = document.getElementById('app-email');
-        const contactPhoneInput = document.getElementById('app-phone');
+        const applyNameInput = document.getElementById('app-name');
+        const applyEmailInput = document.getElementById('app-email');
+        const applyPhoneInput = document.getElementById('app-phone');
 
-        if (contactEmailInput) {
-                contactEmailInput.value = user.email || "";
+        if (applyEmailInput) {
+                applyEmailInput.value = user.email || "";
             }
-        if (contactNameInput) {
-                contactNameInput.value = user.displayName || "";
+        if (applyNameInput) {
+                applyNameInput.value = user.displayName || "";
             }
-        if (ContactPhoneInput){
-            contactPhoneInput.value = user.phoneNumber || "";
+        if (applyPhoneInput){
+            applyPhoneInput.value = user.phoneNumber || "";
         }
     } else {
     }
@@ -128,20 +128,21 @@ if(applyForm) {
 if(checkoutForm) {
     onAuthStateChanged(auth, async (user) => {
     if (user) {
-        const contactNameInput = document.getElementById('fullname');
-        const contactEmailInput = document.getElementById('email');
-        const contactPhoneInput = document.getElementById('phone');
+        const checkNameInput = document.getElementById('fullname');
+        const checkEmailInput = document.getElementById('email');
+        const checkPhoneInput = document.getElementById('phone');
 
-        if (contactEmailInput) {
-                contactEmailInput.value = user.email || "";
+        if (checkEmailInput) {
+                checkEmailInput.value = user.email || "";
             }
-        if (contactNameInput) {
-                contactNameInput.value = user.displayName || "";
+        if (checkNameInput) {
+                checkNameInput.value = user.displayName || "";
             }
-        if (ContactPhoneInput){
-            contactPhoneInput.value = user.phoneNumber || "";
+        if (checkPhoneInput){
+            checkPhoneInput.value = user.phoneNumber || "";
         }
     } else {
     }
 });
 };
+
