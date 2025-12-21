@@ -10,8 +10,10 @@ const profileEmail = document.getElementById('profile-email');
 const profilePhone = document.getElementById('profile-phone');
 const profilePhotoUrl = document.getElementById('profile-photo-url');
 const profileImg = document.getElementById('profile-img');
+const contactForn = document.getElementById('contact_form');
 
-// 1. Tải dữ liệu người dùng khi trang load
+// Tải dữ liệu người dùng khi trang load
+if(profileForm) {
 onAuthStateChanged(auth, async (user) => {
     if (user) {
         // Hiển thị dữ liệu từ Firebase Auth
@@ -41,8 +43,9 @@ onAuthStateChanged(auth, async (user) => {
         window.location.href = "login.html";
     }
 });
+}
 
-// 2. Xử lý khi nhấn nút "Cập nhật thông tin"
+// Xử lý khi nhấn nút "Cập nhật thông tin"
 if (profileForm) {
     profileForm.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -86,3 +89,20 @@ if (profileForm) {
         }
     });
 }
+
+if(contactForn) {
+    onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        const contactNameInput = document.getElementById('name');
+        const contactEmailInput = document.getElementById('email');
+
+        if (contactEmailInput) {
+                contactEmailInput.value = user.email || "";
+            }
+        if (contactNameInput) {
+                contactNameInput.value = user.displayName || "";
+            }  
+    } else {
+    }
+});
+};
