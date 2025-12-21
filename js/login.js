@@ -141,7 +141,7 @@ if (signupForm) {
     });
 }
 
-export {auth};
+export { auth, db, storage};
 
 document.addEventListener('DOMContentLoaded', () => {
     // ===============================================
