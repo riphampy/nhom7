@@ -10,8 +10,9 @@ const profileEmail = document.getElementById('profile-email');
 const profilePhone = document.getElementById('profile-phone');
 const profilePhotoUrl = document.getElementById('profile-photo-url');
 const profileImg = document.getElementById('profile-img');
-const contactForn = document.getElementById('contact_form');
-
+const contactForm = document.getElementById('contact_form');
+const applyForm = document.getElementById('recruitment-form');
+const checkoutForm = document.getElementById('checkout-form');
 // Tải dữ liệu người dùng khi trang load
 if(profileForm) {
 onAuthStateChanged(auth, async (user) => {
@@ -90,7 +91,7 @@ if (profileForm) {
     });
 }
 
-if(contactForn) {
+if(contactForm) {
     onAuthStateChanged(auth, async (user) => {
     if (user) {
         const contactNameInput = document.getElementById('name');
@@ -102,6 +103,44 @@ if(contactForn) {
         if (contactNameInput) {
                 contactNameInput.value = user.displayName || "";
             }  
+    } else {
+    }
+});
+if(applyForm) {
+    onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        const contactNameInput = document.getElementById('app-name');
+        const contactEmailInput = document.getElementById('app-email');
+        const contactPhoneInput = document.getElementById('app-phone');
+
+        if (contactEmailInput) {
+                contactEmailInput.value = user.email || "";
+            }
+        if (contactNameInput) {
+                contactNameInput.value = user.displayName || "";
+            }
+        if (ContactPhoneInput){
+            contactPhoneInput.value = user.phoneNumber || "";
+        }
+    } else {
+    }
+});
+if(checkoutForm) {
+    onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        const contactNameInput = document.getElementById('fullname');
+        const contactEmailInput = document.getElementById('email');
+        const contactPhoneInput = document.getElementById('phone');
+
+        if (contactEmailInput) {
+                contactEmailInput.value = user.email || "";
+            }
+        if (contactNameInput) {
+                contactNameInput.value = user.displayName || "";
+            }
+        if (ContactPhoneInput){
+            contactPhoneInput.value = user.phoneNumber || "";
+        }
     } else {
     }
 });
