@@ -46,22 +46,69 @@
                 </form>
 
                 <h2>Phương Thức Thanh Toán</h2>
-                <div class="payment-methods">
-                    <label class="payment-option">
-                        <input type="radio" name="payment" value="cod" checked>
-                        <div class="option-content">
-                            <span>Thanh toán khi nhận hàng (COD)</span>
-                        </div>
-                    </label>
-                    <label class="payment-option">
-                        <input type="radio" name="payment" value="bank">
-                        <div class="option-content">
-                            <span>Chuyển khoản ngân hàng</span>
-                        </div>
-                    </label>
+<div class="payment-methods">
+    <label class="payment-option">
+        <input type="radio" name="payment" value="cod" checked>
+        <div class="option-content">
+            <span>Thanh toán khi nhận hàng (COD)</span>
+        </div>
+    </label>
+
+    <label class="payment-option">
+        <input type="radio" name="payment" value="bank">
+        <div class="option-content">
+            <span>Chuyển khoản ngân hàng</span>
+        </div>
+    </label>
+
+    <div id="bank-transfer-info" class="bank-transfer-box" style="display: none;">
+        <h3 class="bank-title">Thông tin chuyển khoản</h3>
+        
+        <div class="bank-details-card">
+            <div class="bank-row">
+                <span class="label">Ngân hàng:</span>
+                <span class="value">Ngân hàng TMCP Việt Nam Thịnh Vượng (VPBank)</span>
+            </div>
+            <div class="bank-row">
+                <span class="label">Số tài khoản:</span>
+                <div class="account-wrapper">
+                    <span class="value highlight-blue" id="bank-account-number">1234567890</span>
+                    <button type="button" class="btn-copy" id="btn-copy-acc">
+                        <i class="fas fa-copy"></i> Copy
+                    </button>
+                </div>
+            </div>
+            <div class="bank-row">
+                <span class="label">Chủ tài khoản:</span>
+                <span class="value uppercase">CÔNG TY TNHH PROTECH COMPUTER</span>
+            </div>
+            <div class="bank-row">
+                <span class="label">Chi nhánh:</span>
+                <span class="value">Chi nhánh Hà Nội</span>
+            </div>
+            <div class="bank-row">
+                <span class="label">Số tiền:</span>
+                <span class="value highlight-green" id="transfer-amount">0₫</span>
+            </div>
+            <div class="bank-row content-row">
+                <span class="label">Nội dung chuyển khoản:</span>
+                <div class="transfer-content-box">
+                    [Mã hoá đơn]
                 </div>
             </div>
         </div>
+
+        <div class="bank-instructions">
+            <h4>Hướng dẫn:</h4>
+            <ul>
+                <li>Chuyển khoản đúng số tiền: <strong id="instruction-amount">0₫</strong></li>
+                <li>Nội dung chuyển khoản: <strong>[Mã hoá đơn]</strong></li>
+                <li>Sau khi chuyển khoản, vui lòng chụp ảnh biên lai và lưu lại để đối chiếu khi cần thiết.</li>
+                <li>Đơn hàng sẽ được xử lý sau khi xác nhận thanh toán thành công (thường trong vòng 24 giờ).</li>
+            </ul>
+        </div>
+    </div>
+</div>
 
         <!-- Cột tóm tắt đơn hàng -->
         <div class="order-summary-checkout">
