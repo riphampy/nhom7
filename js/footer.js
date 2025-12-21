@@ -42,7 +42,7 @@ class FooterComponent extends HTMLElement {
                             <h4>Liên hệ</h4>
                             <p><i class="fas fa-map-marker-alt"></i> Học Viện Ngân Hàng, 12 P. Chùa Bộc, Đống Đa</p>
                             <p><i class="fas fa-phone"></i> 1900 1234</p>
-                            <p><i class="fas fa-envelope"></i> vpcomsupport@gmail.com</p>
+                            <p><i class="fas fa-envelope"></i> protechsupport@gmail.com</p>
                             <div class="social-icons">
                                 <a href="https://facebook.com"><i class="fab fa-facebook-f"></i></a>
                                 <a href="https://youtube.com"><i class="fab fa-youtube"></i></a>
