@@ -32,10 +32,10 @@ class FooterComponent extends HTMLElement {
                         <div class="footer-col">
                             <h4>Hỗ trợ khách hàng</h4>
                             <ul>
-        <li><a href="how-to-buy.html">Hướng dẫn mua hàng</a></li>
-        <li><a href="warranty.html">Chính sách bảo hành</a></li>
-        <li><a href="returns.html">Chính sách đổi trả</a></li> <!-- THÊM MỚI -->
-        <li><a href="faq.html">Câu hỏi thường gặp</a></li> <!-- THÊM MỚI -->
+                                <li><a href="how-to-buy.html">Hướng dẫn mua hàng</a></li>
+                                <li><a href="warranty.html">Chính sách bảo hành</a></li>
+                                <li><a href="returns.html">Chính sách đổi trả</a></li>
+                                <li><a href="faq.html">Câu hỏi thường gặp</a></li>
                             </ul>
                         </div>
                         <div class="footer-col">
@@ -45,7 +45,7 @@ class FooterComponent extends HTMLElement {
                             <p><i class="fas fa-envelope"></i> protechsupport@gmail.com</p>
                             <div class="social-icons">
                                 <a href="https://facebook.com"><i class="fab fa-facebook-f"></i></a>
-                                <a href="https://youtube.com"><i class="fab fa-youtube"></i></a>
+                                <a href="https://youtu.be/dQw4w9WgXcQ?list=RDdQw4w9WgXcQ"><i class="fab fa-youtube"></i></a>
                                 <a href="https://tiktok.com"><i class="fab fa-tiktok"></i></a>
                             </div>
                         </div>
