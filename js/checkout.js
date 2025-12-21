@@ -1,30 +1,41 @@
-// js/checkout.js
+// js/checkout.js - Phiên bản Final
 
 document.addEventListener('DOMContentLoaded', () => {
     // ===============================================
     // PHẦN 1: KHAI BÁO CÁC BIẾN DOM
     // ===============================================
+    // Các phần hiển thị đơn hàng
     const summaryItemsContainer = document.getElementById('summary-items');
     const summaryTotalPriceEl = document.getElementById('summary-total-price');
     const checkoutForm = document.getElementById('checkout-form');
 
-    // Kiểm tra xem các element cần thiết có tồn tại không
-    if (!summaryItemsContainer || !summaryTotalPriceEl || !checkoutForm) {
-        console.error("Thiếu các thành phần HTML cần thiết cho trang checkout.");
-        return;
-    }
+    // Các phần hiển thị thông tin ngân hàng
+    const bankInfoBox = document.getElementById('bank-transfer-info');
+    const transferAmountEl = document.getElementById('transfer-amount');     // Số tiền màu xanh
+    const instructionAmountEl = document.getElementById('instruction-amount'); // Số tiền trong hướng dẫn
+    const paymentRadios = document.querySelectorAll('input[name="payment"]');
+    const btnCopy = document.getElementById('btn-copy-acc');
 
+    // Lấy giỏ hàng từ LocalStorage
     const cart = JSON.parse(localStorage.getItem('vpcomputer_cart')) || [];
     let subtotal = 0;
 
+    // Kiểm tra và xử lý lỗi nếu thiếu element quan trọng
+    if (!summaryItemsContainer || !summaryTotalPriceEl || !checkoutForm) {
+        console.error("Thiếu các thành phần HTML chính cho trang checkout.");
+        return;
+    }
 
     // ===============================================
     // PHẦN 2: CÁC HÀM CHỨC NĂNG
     // ===============================================
 
-    // --- Hàm render tóm tắt đơn hàng ---
+    // --- Hàm render tóm tắt đơn hàng & Cập nhật giá tiền ---
     function renderOrderSummary() {
         if (cart.length > 0) {
+            summaryItemsContainer.innerHTML = ''; // Xóa nội dung cũ (nếu có)
+            subtotal = 0; // Reset tổng tiền
+
             cart.forEach(item => {
                 const itemSubtotal = item.price * item.quantity;
                 const itemHTML = `
@@ -43,227 +54,140 @@ document.addEventListener('DOMContentLoaded', () => {
                 summaryItemsContainer.innerHTML += itemHTML;
                 subtotal += itemSubtotal;
             });
+
+            // --- CẬP NHẬT TỔNG TIỀN Ở CÁC VỊ TRÍ ---
+            const formattedTotal = `${subtotal.toLocaleString('vi-VN')}₫`;
+            
+            // 1. Cập nhật ở cột bên phải (Tổng cộng)
+            summaryTotalPriceEl.textContent = formattedTotal;
+
+            // 2. Cập nhật ở phần Chuyển khoản (QUAN TRỌNG)
+            if (transferAmountEl) transferAmountEl.textContent = formattedTotal;
+            if (instructionAmountEl) instructionAmountEl.textContent = formattedTotal;
+
         } else {
             summaryItemsContainer.innerHTML = '<p class="empty-summary">Giỏ hàng của bạn đang trống.</p>';
-            // Vô hiệu hóa nút đặt hàng nếu giỏ trống
-            document.querySelector('.btn-place-order').disabled = true;
+            if(document.querySelector('.btn-place-order')) {
+                document.querySelector('.btn-place-order').disabled = true;
+            }
         }
-
-        summaryTotalPriceEl.textContent = `${subtotal.toLocaleString('vi-VN')}₫`;
-    }
-// --- KHAI BÁO THÊM CHO BANKING ---
-    const paymentRadios = document.querySelectorAll('input[name="payment"]');
-    const bankInfoBox = document.getElementById('bank-transfer-info');
-    const transferAmountEl = document.getElementById('transfer-amount');
-    const instructionAmountEl = document.getElementById('instruction-amount');
-    const btnCopy = document.getElementById('btn-copy-acc');
-    
-    // ... (Phần load cart và tính subtotal giữ nguyên) ...
-
-    // --- HÀM CẬP NHẬT GIÁ VÀO BANK INFO ---
-    function updateBankTransferAmount(total) {
-        if (transferAmountEl) transferAmountEl.textContent = `${total.toLocaleString('vi-VN')}₫`;
-        if (instructionAmountEl) instructionAmountEl.textContent = `${total.toLocaleString('vi-VN')}₫`;
     }
 
-    // --- LOGIC HIỆN/ẨN KHUNG BANKING ---
+    // --- Hàm xử lý ẩn/hiện khung chuyển khoản ---
     function handlePaymentChange() {
-        const selectedPayment = document.querySelector('input[name="payment"]:checked').value;
-        if (selectedPayment === 'bank') {
-            bankInfoBox.style.display = 'block';
-            // Scroll nhẹ xuống để user thấy thông tin
-            bankInfoBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        // Tìm radio đang được check
+        const selectedPayment = document.querySelector('input[name="payment"]:checked');
+        if (selectedPayment && selectedPayment.value === 'bank') {
+            if (bankInfoBox) bankInfoBox.style.display = 'block';
         } else {
-            bankInfoBox.style.display = 'none';
+            if (bankInfoBox) bankInfoBox.style.display = 'none';
         }
     }
 
-    // Gán sự kiện cho các radio button
-    paymentRadios.forEach(radio => {
-        radio.addEventListener('change', handlePaymentChange);
-    });
-
-    // --- LOGIC NÚT COPY ---
+    // --- Hàm xử lý nút Copy số tài khoản ---
     if (btnCopy) {
         btnCopy.addEventListener('click', () => {
             const accNum = document.getElementById('bank-account-number').innerText;
             navigator.clipboard.writeText(accNum).then(() => {
-                // Hiệu ứng khi copy thành công
                 const originalText = btnCopy.innerHTML;
                 btnCopy.innerHTML = '<i class="fas fa-check"></i> Đã chép';
                 btnCopy.style.backgroundColor = '#28a745';
-                
                 setTimeout(() => {
                     btnCopy.innerHTML = originalText;
-                    btnCopy.style.backgroundColor = ''; // Trả về màu cũ (CSS handle)
+                    btnCopy.style.backgroundColor = ''; 
                 }, 2000);
-            }).catch(err => {
-                console.error('Không thể copy text: ', err);
-            });
+            }).catch(err => console.error('Lỗi copy:', err));
         });
     }
-    // --- Hàm tạo và tải hóa đơn PDF (PHIÊN BẢN SỬA LỖI LAYOUT) ---
+
+    // --- Hàm tạo hóa đơn PDF (Giữ nguyên logic cũ) ---
     function generateInvoice(customerData, cartData, total) {
         const { jsPDF } = window.jspdf;
-        const doc = new jsPDF({ unit: 'pt' }); // Sử dụng đơn vị 'point' để dễ kiểm soát hơn
-        const removeAccents = (str) => {
-            return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/g, "d");
-        }
-
+        const doc = new jsPDF({ unit: 'pt' });
+        const removeAccents = (str) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/g, "d");
         const pageWidth = doc.internal.pageSize.getWidth();
         const margin = 40;
         let yPosition = 60;
 
-        // --- PHẦN HEADER CỦA HÓA ĐƠN ---
-        doc.setFontSize(20);
-        doc.setFont('helvetica', 'bold');
-        // Thêm khoảng cách ký tự để tạo hiệu ứng giãn cách đều
+        // Header
+        doc.setFontSize(20); doc.setFont('helvetica', 'bold');
         doc.text(removeAccents("HOA DON BAN HANG"), pageWidth / 2, yPosition, { align: 'center', charSpace: 2 });
         yPosition += 20;
-        doc.setFontSize(14);
-        doc.setFont('helvetica', 'normal');
-        doc.text("Protech Computer", pageWidth / 2, yPosition, { align: 'center' });
+        doc.setFontSize(14); doc.setFont('helvetica', 'normal');
+        doc.text("VP Computer", pageWidth / 2, yPosition, { align: 'center' });
         yPosition += 20;
 
-        // Mã đơn hàng và Ngày tạo
-        // Đoạn code mới đã thêm giờ tạo
-        // Mã đơn hàng và Ngày giờ tạo
-        const orderId = `PTC-${Math.floor(Date.now() / 1000)}`;
-        const now = new Date(); // Lấy đối tượng Date hiện tại
-
-        // --- Định dạng Ngày (DD/MM/YYYY) ---
-        const day = String(now.getDate()).padStart(2, '0');
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        const year = now.getFullYear();
-        const orderDate = `${day}/${month}/${year}`;
-
-        // --- Định dạng Giờ (HH:MM) ---
-        const hours = String(now.getHours()).padStart(2, '0');
-        const minutes = String(now.getMinutes()).padStart(2, '0');
-        const orderTime = `${hours}:${minutes}`;
-
-        // --- Ghép lại thành chuỗi hoàn chỉnh ---
-        const fullDateTime = `${orderTime} ${orderDate}`;
-
+        // Ngày giờ
+        const now = new Date();
+        const fullDateTime = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')} ${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')}/${now.getFullYear()}`;
         doc.setFontSize(10);
-        doc.text(removeAccents(`Ma don hang: ${orderId}`), margin, yPosition);
-        // In ra chuỗi ngày giờ mới
-        doc.text(removeAccents(`Ngay gio tao: ${fullDateTime}`), pageWidth - margin, yPosition, { align: 'right' });
-        yPosition += 15;
-        doc.line(margin, yPosition, pageWidth - margin, yPosition);
-        yPosition += 25;
+        doc.text(removeAccents(`Ma don hang: VPC-${Math.floor(Date.now() / 1000)}`), margin, yPosition);
+        doc.text(removeAccents(`Ngay: ${fullDateTime}`), pageWidth - margin, yPosition, { align: 'right' });
+        yPosition += 15; doc.line(margin, yPosition, pageWidth - margin, yPosition); yPosition += 25;
 
-        // --- PHẦN THÔNG TIN KHÁCH HÀNG (ĐÃ SỬA CĂN CHỈNH) ---
-        doc.setFontSize(12);
-        doc.setFont('helvetica', 'bold');
-        doc.text(removeAccents("Thong tin khach hang:"), margin, yPosition);
-        yPosition += 20;
-
+        // Khách hàng
+        doc.setFontSize(12); doc.setFont('helvetica', 'bold');
+        doc.text(removeAccents("Thong tin khach hang:"), margin, yPosition); yPosition += 20;
         doc.setFont('helvetica', 'normal');
-        doc.text(removeAccents(`Ten: ${customerData.fullname}`), margin + 10, yPosition);
-        yPosition += 18;
-        doc.text(`Email: ${customerData.email}`, margin + 10, yPosition);
-        yPosition += 18;
-        doc.text(removeAccents(`So dien thoai: ${customerData.phone}`), margin + 10, yPosition);
-        yPosition += 18;
-        // Tự động xuống dòng cho địa chỉ dài
-        const addressLines = doc.splitTextToSize(removeAccents(`Dia chi: ${customerData.address}`), pageWidth - (margin * 3));
-        doc.text(addressLines, margin + 10, yPosition);
-        yPosition += (addressLines.length * 15) + 10;
-        doc.line(margin, yPosition, pageWidth - margin, yPosition);
-        yPosition += 25;
+        doc.text(removeAccents(`Ten: ${customerData.fullname}`), margin + 10, yPosition); yPosition += 18;
+        doc.text(`Email: ${customerData.email}`, margin + 10, yPosition); yPosition += 18;
+        doc.text(removeAccents(`SDT: ${customerData.phone}`), margin + 10, yPosition); yPosition += 18;
+        doc.text(removeAccents(`Dia chi: ${customerData.address}`), margin + 10, yPosition); yPosition += 25;
 
-        // --- PHẦN CHI TIẾT ĐƠN HÀNG ---
-        // Header của bảng
+        // Bảng sản phẩm
         doc.setFont('helvetica', 'bold');
         doc.text("STT", margin, yPosition);
         doc.text(removeAccents("Ten san pham"), margin + 40, yPosition);
         doc.text(removeAccents("Thanh tien"), pageWidth - margin, yPosition, { align: 'right' });
-        yPosition += 15;
-        doc.line(margin, yPosition, pageWidth - margin, yPosition);
-        yPosition += 20;
-
-        // Nội dung bảng
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(10);
+        yPosition += 15; doc.line(margin, yPosition, pageWidth - margin, yPosition); yPosition += 20;
+        
+        doc.setFont('helvetica', 'normal'); doc.setFontSize(10);
         cartData.forEach((item, index) => {
             const itemText = removeAccents(`${item.quantity} x ${item.name}`);
-            // Giảm chiều rộng của cột tên sản phẩm để không bị chồng chéo
             const itemLines = doc.splitTextToSize(itemText, 300);
-
             doc.text(`${index + 1}.`, margin, yPosition);
             doc.text(itemLines, margin + 40, yPosition);
-
-            const itemSubtotal = (item.quantity * item.price).toLocaleString('vi-VN') + 'd';
-            doc.text(itemSubtotal, pageWidth - margin, yPosition, { align: 'right' });
-
+            const itemSub = (item.quantity * item.price).toLocaleString('vi-VN') + 'd';
+            doc.text(itemSub, pageWidth - margin, yPosition, { align: 'right' });
             yPosition += (itemLines.length * 12) + 10;
         });
 
-        // --- PHẦN TỔNG CỘNG ---
-        yPosition += 15;
-        doc.line(pageWidth / 2, yPosition, pageWidth - margin, yPosition);
-        yPosition += 20;
-        doc.setFontSize(14);
-        doc.setFont('helvetica', 'bold');
+        // Tổng cộng
+        yPosition += 15; doc.line(pageWidth / 2, yPosition, pageWidth - margin, yPosition); yPosition += 20;
+        doc.setFontSize(14); doc.setFont('helvetica', 'bold');
+        doc.text(removeAccents("Tong Cong:"), pageWidth - margin - 100, yPosition, { align: 'right' });
+        doc.text(`${total.toLocaleString('vi-VN')}d`, pageWidth - margin, yPosition, { align: 'right' });
 
-        const rightAlignX = pageWidth - margin;
-        const totalText = `${total.toLocaleString('vi-VN')}d`;
-
-        // In chữ "Tong Cong:" trước, căn phải vào một vị trí an toàn
-        doc.text(removeAccents("Tong Cong:"), rightAlignX - 100, yPosition, { align: 'right' });
-
-        // In giá trị tổng tiền sau, căn phải vào lề
-        doc.text(totalText, rightAlignX, yPosition, { align: 'right' });
-
-        // --- LỜI CẢM ƠN ---
-        yPosition += 40; // << THAY ĐỔI DÒNG NÀY: Tạo một khoảng cách 40pt so với dòng Tổng Cộng
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'italic');
-        doc.text(removeAccents("Cam on quy khach da mua hang tai Protech Computer!"), pageWidth / 2, yPosition, { align: 'center' });
-
-        // --- LƯU FILE PDF ---
-        const today = new Date();
-        const formattedDate = `${day}-${month}-${year}`;
-        const fileName = `HoaDon_ProtechComputer-${formattedDate}.pdf`;
+        // Save
+        const fileName = `HoaDon_VPComputer-${now.getDate()}${now.getMonth()+1}${now.getFullYear()}.pdf`;
         doc.save(fileName);
     }
-
 
     // ===============================================
     // PHẦN 3: GẮN SỰ KIỆN VÀ KHỞI TẠO
     // ===============================================
 
-    // --- Gắn sự kiện SUBMIT cho FORM ---
-    checkoutForm.addEventListener('submit', (e) => {
-        e.preventDefault(); // Ngăn form gửi đi theo cách truyền thống
+    // 1. Gắn sự kiện chuyển đổi radio button (COD / Banking)
+    paymentRadios.forEach(radio => {
+        radio.addEventListener('change', handlePaymentChange);
+    });
 
-        // 1. Thu thập dữ liệu khách hàng từ form
+    // 2. Gắn sự kiện Submit Form
+    checkoutForm.addEventListener('submit', (e) => {
+        e.preventDefault();
         const customerData = {
             fullname: document.getElementById('fullname').value,
             email: document.getElementById('email').value,
             phone: document.getElementById('phone').value,
             address: document.getElementById('address').value,
         };
-
-        // 2. Gọi hàm tạo hóa đơn
         generateInvoice(customerData, cart, subtotal);
-
-        // 3. Xóa giỏ hàng sau khi đã xuất hóa đơn
         localStorage.removeItem('vpcomputer_cart');
-        // Cũng cập nhật lại icon giỏ hàng trên header (nếu có cart.js)
-        if (typeof updateCartAndSave === 'function') {
-            updateCartAndSave([]);
-        }
-
-        // 4. Thông báo và chuyển hướng về trang chủ
-        alert("Đặt hàng thành công! Hóa đơn của bạn đang được tải xuống.");
-        setTimeout(() => {
-            window.location.href = 'index.html';
-        }, 1000);
+        alert("Đặt hàng thành công! Hóa đơn đang được tải xuống.");
+        setTimeout(() => { window.location.href = 'index.html'; }, 1000);
     });
 
-    // --- Khởi tạo trang ---
-    handlePaymentChange();
-    renderOrderSummary();
+    // 3. Khởi tạo
+    renderOrderSummary(); // Tính tiền và điền vào các ô
+    handlePaymentChange(); // Kiểm tra xem có cần hiện bank info không
 });
