@@ -1,139 +1,193 @@
-// js/product.js (Phiên bản đã sửa lỗi lồng sự kiện)
+// js/product.js — Kiến trúc MVC + Document Fragment
+// Nhóm 7 — Phiên bản tái cấu trúc
 
-// Chỉ cần MỘT sự kiện DOMContentLoaded duy nhất bao bọc toàn bộ code
-document.addEventListener('DOMContentLoaded', () => {
+// ================================================================
+//  DOM ELEMENTS (dùng chung cho cả 3 tầng)
+// ================================================================
+const productGrid     = document.getElementById('product-grid-container');
+const categoryFilter  = document.getElementById('category-filter');
+const priceFilter     = document.getElementById('price-filter');
+const brandFilter     = document.getElementById('brand-filter');
+const sortSelect      = document.getElementById('sort');
+const toggleFilterBtn = document.getElementById('btn-toggle-filter');
+const filterSidebar   = document.getElementById('filter-sidebar');
+const closeFilterBtn  = document.getElementById('btn-close-filter');
 
-    // ===============================================
-    // PHẦN 1: CÁC DOM ELEMENTS
-    // ===============================================
-    const productGrid = document.getElementById('product-grid-container');
-    const categoryFilter = document.getElementById('category-filter');
-    const priceFilter = document.getElementById('price-filter');
-    const brandFilter = document.getElementById('brand-filter');
-    const sortSelect = document.getElementById('sort');
-    const toggleFilterBtn = document.getElementById('btn-toggle-filter');
-    const filterSidebar = document.getElementById('filter-sidebar');
-    const closeFilterBtn = document.getElementById('btn-close-filter');
-    // Thoát sớm nếu thiếu các thành phần quan trọng
-    if (!productGrid || !categoryFilter || !priceFilter || !brandFilter || !sortSelect) {
-        console.error("Thiếu các thành phần HTML cần thiết cho trang sản phẩm.");
-        return;
-    }
+// ================================================================
+//  TẦNG MODEL — nguồn sự thật duy nhất, không biết gì về UI
+// ================================================================
+const ProductModel = {
+    products: [],
 
-    // ===============================================
-    // PHẦN 2: CÁC HÀM CHỨC NĂNG
-    // ===============================================
+    setProducts(data) {
+        this.products = data;
+    },
 
-    function shuffleArray(array) {
-        let currentIndex = array.length, randomIndex;
-        while (currentIndex !== 0) {
-            randomIndex = Math.floor(Math.random() * currentIndex);
-            currentIndex--;
-            [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+    getProducts() {
+        return this.products;
+    },
+
+    shuffleArray(array) {
+        const arr = [...array]; // tránh mutate mảng gốc
+        let cur = arr.length, rnd;
+        while (cur !== 0) {
+            rnd = Math.floor(Math.random() * cur--);
+            [arr[cur], arr[rnd]] = [arr[rnd], arr[cur]];
         }
-        return array;
+        return arr;
     }
+};
 
-    function renderProducts(productsToRender) {
+// ================================================================
+//  TẦNG VIEW — chỉ nhận data và vẽ UI, không tính toán nghiệp vụ
+// ================================================================
+const ProductView = {
+
+    renderProducts(productsToRender) {
         productGrid.innerHTML = '';
+
         if (productsToRender.length === 0) {
             productGrid.innerHTML = '<p class="no-products">Không tìm thấy sản phẩm phù hợp.</p>';
             return;
         }
-        productsToRender.forEach(product => {
-            const productCard = document.createElement('div');
-            productCard.className = 'product-card';
-            productCard.dataset.id = product.id;
-            const isAvailable = product.stockStatus === 'Còn hàng';
-            const salePrice = calculateSalePrice(product);
-            let priceHTML = `<p class="product-price"><span class="price">${salePrice.toLocaleString('vi-VN')}₫</span></p>`;
-            if (salePrice < product.price) {
-                priceHTML = `<p class="product-price sale"><span class="price">${salePrice.toLocaleString('vi-VN')}₫</span>\n<del style="color:black; font-size:14px">${product.price.toLocaleString('vi-VN')}₫</del></p>`;
-            }
-            productCard.innerHTML = `<a href="product-detail.html?id=${product.id}" class="product-link"><div class="product-image"><img src="${product.image}" alt="${product.name}"></div><div class="product-info"><h3 class="product-name">${product.name}</h3>${priceHTML}</div></a><div class="product-actions"><button class="btn btn-secondary" ${isAvailable ? '' : 'disabled'}>${isAvailable ? 'Thêm vào giỏ' : product.stockStatus}</button></div>`;
-            productGrid.appendChild(productCard);
-        });
-    }
 
-    function populateBrandFilter() {
-        const brands = [...new Set(allProducts.map(p => p.brand))];
+        // Dùng DocumentFragment: gom toàn bộ thẻ vào bộ nhớ trước
+        // → chỉ append vào DOM thật 1 lần duy nhất, tránh Reflow liên tiếp
+        const fragment = document.createDocumentFragment();
+
+        productsToRender.forEach(product => {
+            const card = document.createElement('div');
+            card.className  = 'product-card';
+            card.dataset.id = product.id;
+
+            const isAvailable = product.stockStatus === 'Còn hàng';
+            const salePrice   = calculateSalePrice(product);
+
+            let priceHTML = `<p class="product-price"><span class="price">${salePrice.toLocaleString('vi-VN')}₫</span></p>`;
+
+            if (salePrice < product.price) {
+                priceHTML = `<p class="product-price sale"><span class="price">${salePrice.toLocaleString('vi-VN')}₫</span><del style="color:black; font-size:14px">${product.price.toLocaleString('vi-VN')}₫</del></p>`;
+            }
+
+            card.innerHTML = `<a href="product-detail.html?id=${product.id}" class="product-link"><div class="product-image"><img src="${product.image}" alt="${product.name}"></div><div class="product-info"><h3 class="product-name">${product.name}</h3>${priceHTML}</div></a><div class="product-actions"><button class="btn btn-secondary" ${isAvailable ? '' : 'disabled'}>${isAvailable ? 'Thêm vào giỏ' : product.stockStatus}</button></div>`;
+
+            fragment.appendChild(card); // ghi vào RAM, chưa động vào DOM thật
+        });
+
+        productGrid.appendChild(fragment); // append vào DOM thật: 1 lần duy nhất
+    },
+
+    renderBrandFilter(brands) {
         brands.sort().forEach(brand => {
             const li = document.createElement('li');
             li.innerHTML = `<label><input type="checkbox" name="brand" value="${brand.toLowerCase()}"> ${brand}</label>`;
             brandFilter.appendChild(li);
         });
     }
+};
 
-    function applyFilters() {
-        const selectedCategory = categoryFilter.querySelector('a.active').dataset.category;
+// ================================================================
+//  TẦNG CONTROLLER — nhạc trưởng: bắt sự kiện, điều phối M và V
+// ================================================================
+const ProductController = {
+
+    init() {
+        if (!productGrid || !categoryFilter || !priceFilter || !brandFilter || !sortSelect) {
+            console.error('Thiếu các thành phần HTML cần thiết cho trang sản phẩm.');
+            return;
+        }
+        this.populateBrands();
+        this.bindEvents();
+        this.applyFilters();
+        this.checkUrlForCategory();
+    },
+
+    populateBrands() {
+        const brands = [...new Set(allProducts.map(p => p.brand))];
+        ProductView.renderBrandFilter(brands);
+    },
+
+    applyFilters() {
+        // 1) Đọc trạng thái bộ lọc
+        const selectedCategory   = categoryFilter.querySelector('a.active').dataset.category;
         const selectedPriceValue = document.querySelector('input[name="price"]:checked').value;
-        const selectedBrands = [...document.querySelectorAll('input[name="brand"]:checked')].map(cb => cb.value);
-        let filteredProducts = allProducts;
-        if (selectedCategory !== 'all') { filteredProducts = filteredProducts.filter(p => p.category === selectedCategory); }
-        if (selectedPriceValue !== 'all') { const [minPrice, maxPrice] = selectedPriceValue.split('-').map(parseFloat); filteredProducts = filteredProducts.filter(p => p.price >= minPrice && p.price <= maxPrice); }
-        if (selectedBrands.length > 0) { filteredProducts = filteredProducts.filter(p => selectedBrands.includes(p.brand.toLowerCase())); }
+        const selectedBrands     = [...document.querySelectorAll('input[name="brand"]:checked')].map(cb => cb.value);
 
+        // 2) Lọc từ nguồn dữ liệu gốc
+        let filtered = allProducts;
+
+        if (selectedCategory !== 'all') {
+            filtered = filtered.filter(p => p.category === selectedCategory);
+        }
+        if (selectedPriceValue !== 'all') {
+            const [minPrice, maxPrice] = selectedPriceValue.split('-').map(parseFloat);
+            filtered = filtered.filter(p => p.price >= minPrice && p.price <= maxPrice);
+        }
+        if (selectedBrands.length > 0) {
+            filtered = filtered.filter(p => selectedBrands.includes(p.brand.toLowerCase()));
+        }
+
+        // 3) Sắp xếp
         const sortBy = sortSelect.value;
         if (sortBy === 'default') {
-            filteredProducts = shuffleArray(filteredProducts);
+            filtered = ProductModel.shuffleArray(filtered);
         } else if (sortBy === 'price-asc') {
-            filteredProducts.sort((a, b) => calculateSalePrice(a) - calculateSalePrice(b));
+            filtered = [...filtered].sort((a, b) => calculateSalePrice(a) - calculateSalePrice(b));
         } else if (sortBy === 'price-desc') {
-            filteredProducts.sort((a, b) => calculateSalePrice(b) - calculateSalePrice(a));
+            filtered = [...filtered].sort((a, b) => calculateSalePrice(b) - calculateSalePrice(a));
         }
-        renderProducts(filteredProducts);
-    }
 
-    // ===============================================
-    // PHẦN 3: GẮN SỰ KIỆN VÀ KHỞI TẠO
-    // ===============================================
-    function checkUrlForCategory() {
-        const urlParams = new URLSearchParams(window.location.search);
+        // 4) Lưu vào Model rồi ra lệnh View render
+        ProductModel.setProducts(filtered);
+        ProductView.renderProducts(ProductModel.getProducts());
+    },
+
+    checkUrlForCategory() {
+        const urlParams       = new URLSearchParams(window.location.search);
         const categoryFromUrl = urlParams.get('category');
         if (categoryFromUrl) {
             const targetLink = categoryFilter.querySelector(`a[data-category="${categoryFromUrl}"]`);
             if (targetLink) {
-                // Click giả không kích hoạt event listener một cách đáng tin cậy trên mọi trình duyệt
-                // Thay vào đó, chúng ta sẽ trực tiếp cập nhật trạng thái và gọi applyFilters
                 categoryFilter.querySelector('a.active').classList.remove('active');
                 targetLink.classList.add('active');
-                applyFilters(); // Gọi lại bộ lọc sau khi đã đổi active link
+                this.applyFilters();
             }
         }
-    }
+    },
 
-    categoryFilter.addEventListener('click', (e) => {
-        if (e.target.tagName === 'A') {
-            e.preventDefault();
-            categoryFilter.querySelector('a.active').classList.remove('active');
-            e.target.classList.add('active');
-            applyFilters();
+    bindEvents() {
+        // Bộ lọc danh mục
+        categoryFilter.addEventListener('click', (e) => {
+            if (e.target.tagName === 'A') {
+                e.preventDefault();
+                categoryFilter.querySelector('a.active').classList.remove('active');
+                e.target.classList.add('active');
+                this.applyFilters();
+            }
+        });
+
+        // Sidebar filter — mở / đóng, không trùng lặp
+        if (toggleFilterBtn && filterSidebar) {
+            toggleFilterBtn.addEventListener('click', () => {
+                filterSidebar.classList.add('active');
+            });
         }
-    });
+        if (closeFilterBtn && filterSidebar) {
+            closeFilterBtn.addEventListener('click', () => {
+                filterSidebar.classList.remove('active');
+            });
+        }
 
-    if (toggleFilterBtn && filterSidebar) {
-        toggleFilterBtn.addEventListener('click', () => {
-            filterSidebar.classList.toggle('active');
-        });
+        // Bộ lọc giá, thương hiệu, sắp xếp
+        priceFilter.addEventListener('change', () => this.applyFilters());
+        brandFilter.addEventListener('change', () => this.applyFilters());
+        sortSelect.addEventListener('change',  () => this.applyFilters());
     }
+};
 
-    priceFilter.addEventListener('change', applyFilters);
-    brandFilter.addEventListener('change', applyFilters);
-    sortSelect.addEventListener('change', applyFilters);
-
-    // LOGIC MỚI CHO CÁC NÚT LỌC
-    if (toggleFilterBtn && filterSidebar) {
-        toggleFilterBtn.addEventListener('click', () => {
-            filterSidebar.classList.add('active');
-        });
-    }
-    if (closeFilterBtn && filterSidebar) {
-        closeFilterBtn.addEventListener('click', () => {
-            filterSidebar.classList.remove('active');
-        });
-    }
-    populateBrandFilter();
-    applyFilters(); // Áp dụng bộ lọc lần đầu tiên
-    checkUrlForCategory(); // Kiểm tra URL để áp dụng bộ lọc từ link
-
+// ================================================================
+//  KHỞI ĐỘNG ỨNG DỤNG
+// ================================================================
+document.addEventListener('DOMContentLoaded', () => {
+    ProductController.init();
 });
